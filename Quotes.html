@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Горе от ума - Цитаты</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(184, 77, 255, 0.3);
+        }
+        
+        /* Кастомное выделение */
+        ::selection {
+            background: rgba(184, 77, 255, 0.3);
+            color: #ffffff;
+        }
+        
+        ::-moz-selection {
+            background: rgba(184, 77, 255, 0.3);
+            color: #ffffff;
+        }
+        
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: #0f0829;
+            color: #e8e6f3;
+            min-height: 100vh;
+            padding: 40px 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(105, 35, 165, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(76, 0, 255, 0.1) 0%, transparent 20%);
+            overflow-x: auto;
+        }
+        
+        /* Прелоадер */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0829;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(184, 77, 255, 0.3);
+            border-top: 3px solid #b84dff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loader-text {
+            font-weight: 700;
+            color: #b84dff;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            min-width: 1000px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .title {
+            font-weight: 900;
+            font-size: 3.2em;
+            background: linear-gradient(135deg, #b84dff 0%, #6c43ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-weight: 600;
+            font-size: 1.3em;
+            color: #a78bfa;
+            opacity: 0.9;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .quote-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(23, 15, 51, 0.7);
+            border-radius: 24px;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(184, 77, 255, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: tableFloat 6s ease-in-out infinite;
+            min-width: 1000px;
+        }
+        
+        @keyframes tableFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .quote-table th {
+            background: linear-gradient(135deg, rgba(108, 67, 255, 0.9) 0%, rgba(184, 77, 255, 0.9) 100%);
+            padding: 28px 25px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.3em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            border-bottom: 3px solid #b84dff;
+        }
+        
+        .quote-table th:after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff47d6, transparent);
+        }
+        
+        .quote-table td {
+            padding: 0;
+            border-bottom: 1px solid rgba(184, 77, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .theme-cell {
+            background: rgba(43, 25, 94, 0.6);
+            font-weight: 800;
+            font-size: 1.15em;
+            width: 220px;
+            padding: 25px;
+            vertical-align: middle;
+            border-right: 2px solid rgba(184, 77, 255, 0.3);
+            position: relative;
+            color: #d8c7ff;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .theme-cell:before {
+            content: "✦";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b84dff;
+            font-size: 1.2em;
+        }
+        
+        .quote-cell {
+            position: relative;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .quote-content {
+            position: relative;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.4s ease;
+            border: 1px solid transparent;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .quote-content:hover {
+            background: rgba(184, 77, 255, 0.08);
+            border: 1px solid rgba(184, 77, 255, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(184, 77, 255, 0.2);
+        }
+        
+        .character-name {
+            font-weight: 800;
+            color: #ff6bd6;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1em;
+        }
+        
+        .character-name:before {
+            content: "🜲";
+            font-size: 1.3em;
+            filter: hue-rotate(45deg);
+        }
+        
+        .quote-text {
+            font-weight: 500;
+            line-height: 1.7;
+            color: #e2dcff;
+            font-size: 1.05em;
+            padding-right: 50px;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(184, 77, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(184, 77, 255, 0.4);
+            font-size: 1.3em;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(184, 77, 255, 0.4);
+            transform: scale(1.1) rotate(8deg);
+        }
+        
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Анимация копирования */
+        @keyframes copySuccess {
+            0% { transform: scale(1); }
+            50% { 
+                transform: scale(1.2);
+                background: rgba(111, 255, 176, 0.4);
+                border-color: rgba(111, 255, 176, 0.6);
+            }
+            100% { transform: scale(1); }
+        }
+        
+        .copied .copy-btn {
+            animation: copySuccess 0.6s ease;
+            background: rgba(111, 255, 176, 0.3);
+            border-color: rgba(111, 255, 176, 0.5);
+        }
+        
+        /* Модальное окно с улучшенной анимацией */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 8, 41, 0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            animation: modalFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes modalFadeIn {
+            from { 
+                opacity: 0; 
+                backdrop-filter: blur(0px);
+            }
+            to { 
+                opacity: 1; 
+                backdrop-filter: blur(10px);
+            }
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: linear-gradient(135deg, #1a1038 0%, #2d1b69 100%);
+            padding: 40px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid rgba(184, 77, 255, 0.3);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(184, 77, 255, 0.1);
+            animation: modalScaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            overflow: hidden;
+        }
+        
+        @keyframes modalScaleIn {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .modal-content:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #b84dff, #6c43ff, #ff47d6);
+            animation: rainbowLine 3s linear infinite;
+        }
+        
+        @keyframes rainbowLine {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(184, 77, 255, 0.3);
+        }
+        
+        .modal-title {
+            font-weight: 800;
+            font-size: 1.5em;
+            color: #ff6bd6;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #b84dff;
+            font-size: 2em;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: rgba(184, 77, 255, 0.2);
+            transform: rotate(90deg);
+        }
+        
+        .modal-quote {
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #b84dff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modal-quote:before {
+            content: """;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 4em;
+            color: rgba(184, 77, 255, 0.2);
+            font-family: serif;
+            line-height: 1;
+        }
+        
+        .modal-info {
+            line-height: 1.7;
+            color: #d8c7ff;
+            animation: textSlideUp 0.6s ease-out 0.2s both;
+        }
+        
+        @keyframes textSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Уведомление о копировании */
+        .copy-notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #6fffaf, #47d6ff);
+            color: #0f0829;
+            padding: 18px 28px;
+            border-radius: 14px;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .copy-notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-icon {
+            font-size: 1.4em;
+        }
+        
+        /* Адаптивность для мобильных */
+        @media (max-width: 1024px) {
+            .container {
+                min-width: 900px;
+            }
+            
+            .quote-table {
+                min-width: 900px;
+                font-size: 0.95em;
+            }
+            
+            .theme-cell {
+                width: 180px;
+                padding: 20px 15px;
+            }
+            
+            .quote-cell {
+                padding: 20px 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .container {
+                min-width: 700px;
+            }
+            
+            .quote-table {
+                min-width: 700px;
+            }
+            
+            .title {
+                font-size: 2.5em;
+            }
+            
+            .quote-table th {
+                padding: 20px 15px;
+                font-size: 1.1em;
+            }
+            
+            .theme-cell {
+                width: 150px;
+                font-size: 1em;
+                text-align: center;
+                padding: 15px 10px;
+            }
+            
+            .theme-cell:before {
+                display: none;
+            }
+            
+            .quote-text {
+                padding-right: 40px;
+                font-size: 0.95em;
+            }
+            
+            .copy-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1em;
+            }
+            
+            .modal-content {
+                padding: 25px;
+                width: 95%;
+            }
+        }
+        
+        /* Декоративные элементы */
+        .floating-element {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #b84dff;
+            border-radius: 50%;
+            opacity: 0.6;
+            z-index: -1;
+            animation: float 8s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100vw, 100vh) rotate(360deg); }
+        }
+        
+        /* Создаем несколько плавающих элементов */
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 5%;
+            animation-duration: 25s;
+            background: #6c43ff;
+        }
+        
+        .floating-element:nth-child(2) {
+            top: 70%;
+            left: 80%;
+            animation-duration: 30s;
+            background: #ff47d6;
+        }
+        
+        .floating-element:nth-child(3) {
+            top: 40%;
+            left: 90%;
+            animation-duration: 20s;
+            background: #47d6ff;
+        }
+        
+        /* Индикатор прокрутки для мобильных */
+        .scroll-indicator {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(184, 77, 255, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            z-index: 100;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        @media (max-width: 768px) {
+            .scroll-indicator {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Прелоадер -->
+    <div class="preloader" id="preloader">
+        <div class="loader"></div>
+        <div class="loader-text">ЗАГРУЗКА...</div>
+    </div>
+    
+    <!-- Декоративные элементы -->
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    
+    <!-- Индикатор прокрутки для мобильных -->
+    <div class="scroll-indicator">← Прокрутите в сторону →</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Горе от ума</h1>
+            <div class="subtitle">Сравнительный анализ цитат Чацкого и Фамусовского общества</div>
+        </div>
+        
+        <div class="table-container">
+            <table class="quote-table">
+                <thead>
+                    <tr>
+                        <th>Тема</th>
+                        <th>Чацкий</th>
+                        <th>Фамусовское общество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="theme-cell">Крепостное право</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Крепостное право" data-character="Чацкий" data-info="Чацкий резко осуждает жестокость крепостников, которые относятся к людям как к вещам. В этой цитате он показывает моральное разложение дворянства, меняющего верных слуг на собак.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«Тот Нестор негодяев знатных, толпою окруженный слуг; усердствуя, они в часы вина и драки и честь, и жизнь его не раз спасали: вдруг, на них он выменял борзые три собаки!!!»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Крепостное право" data-character="Фамусов" data-info="Фамусов представляет традиционный взгляд дворянства, где крепостное право - естественный порядок вещей. Для него важнее родовитость и традиции, чем права человека.">
+                                <div class="character-name">Фамусов</div>
+                                <div class="quote-text">«...У нас уж исстари ведется, что по отцу и сыну честь.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theme-cell">Образование</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Образование" data-character="Чацкий" data-info="Чацкий иронизирует над формальным отношением к образованию в обществе, где важнее количество учителей, а не качество обучения. Он выступает за настоящее просвещение.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«Что нынче, так же, как издревле, хлопочут набирать учителей полки, числом поболее, ценою подешевле?»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Образование" data-character="Фамусов" data-info="Фамусов видит в образовании угрозу устоям общества. Для него ученость - причина вольнодумства и неповиновения, поэтому он предпочитает традиционное воспитание без излишнего образования.">
+                                <div class="character-name">Фамусов</div>
+                                <div class="quote-text">«Ученье — вот чума, ученость — вот причина.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theme-cell">Служба</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Служба" data-character="Чацкий" data-info="Эта фраза стала афоризмом, выражающим позицию честного человека. Чацкий готов служить делу, но не лицам, что противопоставляет его карьеристам фамусовского общества.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«Служить бы рад, прислуживаться тошно.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Служба" data-character="Молчалин" data-info="Молчалин представляет идеального служащего с точки зрения фамусовского общества - беспринципного карьериста, готового на все ради продвижения по службе.">
+                                <div class="character-name">Молчалин</div>
+                                <div class="quote-text">«В мои лета не должно сметь свое суждение иметь.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theme-cell">Иностранное влияние</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Иностранное влияние" data-character="Чацкий" data-info="Чацкий критикует слепое преклонение перед всем иностранным, характерное для русского дворянства его времени. Он выступает за развитие национальной культуры.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«Как с ранних пор привыкли верить мы, что нам без немцев нет спасенья!»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Иностранное влияние" data-character="Фамусов" data-info="Фамусов, несмотря на критику Чацкого, сам подвержен моде на все иностранное. Его ирония здесь лицемерна - он такой же поклонник западных влияний, как и другие.">
+                                <div class="character-name">Фамусов</div>
+                                <div class="quote-text">«...И дверь отперта для званых и незваных, особенно из иностранных.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theme-cell">Чины и богатство</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Чины и богатство" data-character="Чацкий" data-info="Чацкий обличает коррупцию и несправедливость в распределении чинов и богатства. Он видит, что высокие посты часто занимают не достойные, а ловкие проходимцы.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«Где, укажите нам, отечества отцы, которых мы должны принять за образцы? Не эти ли, грабительством богаты?»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Чины и богатство" data-character="Фамусов" data-info="Для Фамусова и его круга богатство и чины - главные критерии оценки человека. Брак рассматривается как выгодная сделка, а не союз по любви.">
+                                <div class="character-name">Фамусов</div>
+                                <div class="quote-text">«...Будь плохенький, да если наберется душ тысячки две родовых, — тот и жених.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theme-cell">Любовь и брак</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Любовь и брак" data-character="Чацкий" data-info="Чацкий разочаровывается в своих романтических идеалах, столкнувшись с расчетливостью общества. Его монолог отражает конфликт между искренним чувством и социальными условностями.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«И вот та родина... Нет, в нынче свете я вижу, что пора уж охладеть. Мечтаньям с годами след...»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Любовь и брак" data-character="Фамусов" data-info="Фамусов рассматривает брак дочери как способ улучшить материальное положение семьи. Любовь для него - второстепенное чувство по сравнению с выгодой.">
+                                <div class="character-name">Фамусов</div>
+                                <div class="quote-text">«...Кто беден, тот тебе не пара.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="theme-cell">Понятие ума</td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Понятие ума" data-character="Чацкий" data-info="Чацкий осознает внутренний конфликт между разумом и чувствами. Его ум мешает ему приспособиться к лицемерному обществу, что становится причиной его одиночества.">
+                                <div class="character-name">Чацкий</div>
+                                <div class="quote-text">«Ум с сердцем не в ладу.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                        <td class="quote-cell">
+                            <div class="quote-content" data-theme="Понятие ума" data-character="Софья" data-info="Софья выражает распространенное в фамусовском обществе мнение, что умный человек опасен, а бессловесный - удобен. Ум здесь приравнивается к вольнодумству.">
+                                <div class="character-name">Софья</div>
+                                <div class="quote-text">«...Ведь нынче любят бессловесных.»</div>
+                                <div class="copy-btn">⎘</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="quoteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Анализ цитаты</h2>
+                <button class="close-modal" id="closeModal">×</button>
+            </div>
+            <div class="modal-quote" id="modalQuote"></div>
+            <div class="modal-info" id="modalInfo"></div>
+        </div>
+    </div>
+
+    <!-- Уведомление о копировании -->
+    <div class="copy-notification" id="copyNotification">
+        <span class="notification-icon">✓</span>
+        <span>Цитата скопирована в буфер!</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Скрываем прелоадер после загрузки страницы
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                preloader.classList.add('hidden');
+                
+                setTimeout(function() {
+                    preloader.style.display = 'none';
+                }, 500);
+            }, 1500);
+            
+            const modal = document.getElementById('quoteModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalQuote = document.getElementById('modalQuote');
+            const modalInfo = document.getElementById('modalInfo');
+            
+            // Обработчики для кнопок копирования
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const quoteContent = this.closest('.quote-content');
+                    copyQuote(quoteContent);
+                });
+            });
+            
+            // Обработчики для открытия модального окна
+            const quoteContents = document.querySelectorAll('.quote-content');
+            
+            quoteContents.forEach(content => {
+                content.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('copy-btn')) {
+                        openModal(this);
+                    }
+                });
+            });
+            
+            // Закрытие модального окна
+            closeModal.addEventListener('click', function() {
+                closeModalAnimation();
+            });
+            
+            // Закрытие модального окна при клике вне его
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModalAnimation();
+                }
+            });
+            
+            function openModal(element) {
+                const theme = element.getAttribute('data-theme');
+                const character = element.getAttribute('data-character');
+                const quote = element.querySelector('.quote-text').textContent;
+                const info = element.getAttribute('data-info');
+                
+                modalTitle.textContent = `${theme} • ${character}`;
+                modalQuote.textContent = `${quote}`;
+                modalInfo.textContent = info;
+                
+                modal.style.display = 'block';
+                
+                // Добавляем небольшую задержку для плавности анимации
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+            }
+            
+            function closeModalAnimation() {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 500);
+            }
+            
+            function copyQuote(element) {
+                const quoteText = element.querySelector('.quote-text').textContent;
+                const character = element.querySelector('.character-name').textContent;
+                const fullText = `${character}\n${quoteText}`;
+                
+                // Копирование в буфер обмена
+                navigator.clipboard.writeText(fullText).then(() => {
+                    // Показываем анимацию
+                    const quoteCell = element.closest('.quote-cell');
+                    quoteCell.classList.add('copied');
+                    setTimeout(() => {
+                        quoteCell.classList.remove('copied');
+                    }, 1000);
+                    
+                    // Показываем уведомление
+                    const notification = document.getElementById('copyNotification');
+                    notification.classList.add('show');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 3000);
+                }).catch(err => {
+                    console.error('Ошибка копирования: ', err);
+                    // Fallback для старых браузеров
+                    const textArea = document.createElement('textarea');
+                    textArea.value = fullText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    //Все равно показываем анимацию
+                    const quoteCell = element.closest('.quote-cell');
+                    quoteCell.classList.add('copied');
+                    setTimeout(() => {
+                        quoteCell.classList.remove('copied');
+                    }, 1000);
+                    
+                    const notification = document.getElementById('copyNotification');
+                    notification.classList.add('show');
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 3000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
