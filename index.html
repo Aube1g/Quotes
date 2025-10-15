@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Горе от ума - Цитаты</title>
+    <title>Горе от ума - Цитаты и Афоризмы</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap');
         
@@ -18,11 +18,21 @@
         ::selection {
             background: rgba(184, 77, 255, 0.3);
             color: #ffffff;
+            border-radius: 4px;
         }
         
         ::-moz-selection {
             background: rgba(184, 77, 255, 0.3);
             color: #ffffff;
+            border-radius: 4px;
+        }
+        
+        /* Отключаем стандартное выделение для некоторых элементов */
+        .quote-content::selection,
+        .aphorism-item::selection,
+        .theme-cell::selection {
+            background: rgba(184, 77, 255, 0.2);
+            color: #e8e6f3;
         }
         
         body {
@@ -31,13 +41,29 @@
             color: #e8e6f3;
             min-height: 100vh;
             padding: 40px 20px;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(105, 35, 165, 0.15) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(76, 0, 255, 0.1) 0%, transparent 20%);
             overflow-x: auto;
+            position: relative;
+            opacity: 0;
+            animation: bodyFadeIn 1s ease 0.5s forwards;
         }
         
-        /* Прелоадер */
+        @keyframes bodyFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        /* Канвас для частиц */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* УЛУЧШЕННЫЙ ПРЕЛОАДЕР */
         .preloader {
             position: fixed;
             top: 0;
@@ -50,7 +76,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
         
         .preloader.hidden {
@@ -58,50 +84,174 @@
             visibility: hidden;
         }
         
-        .loader {
+        .loader-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loader-orbit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            animation: orbitRotate 3s linear infinite;
+        }
+        
+        .loader-orbit:nth-child(1) {
+            border-top: 2px solid #b84dff;
+            animation-delay: 0s;
+        }
+        
+        .loader-orbit:nth-child(2) {
+            border-right: 2px solid #6c43ff;
+            animation-delay: 0.2s;
+        }
+        
+        .loader-orbit:nth-child(3) {
+            border-bottom: 2px solid #ff47d6;
+            animation-delay: 0.4s;
+        }
+        
+        .loader-orbit:nth-child(4) {
+            border-left: 2px solid #47d6ff;
+            animation-delay: 0.6s;
+        }
+        
+        .loader-core {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #b84dff, #6c43ff);
+            border-radius: 50%;
+            animation: corePulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(184, 77, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loader-core::before {
+            content: '';
             width: 60px;
             height: 60px;
-            border: 3px solid rgba(184, 77, 255, 0.3);
-            border-top: 3px solid #b84dff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            animation: coreRotate 1.5s linear infinite reverse;
+        }
+        
+        @keyframes orbitRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes corePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes coreRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .loader-text {
-            font-weight: 700;
+            font-weight: 800;
             color: #b84dff;
-            font-size: 1.2em;
-            letter-spacing: 2px;
+            font-size: 1.4em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+            margin-top: 30px;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .loader-text:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #b84dff, transparent);
+            animation: textShine 2s ease-in-out infinite;
+        }
+        
+        @keyframes textShine {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
         
         .container {
             max-width: 1400px;
             margin: 0 auto;
             min-width: 1000px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: containerSlideUp 1s ease 1s forwards;
+        }
+        
+        @keyframes containerSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             position: relative;
         }
         
         .title {
             font-weight: 900;
             font-size: 3.2em;
-            background: linear-gradient(135deg, #b84dff 0%, #6c43ff 100%);
+            background: linear-gradient(135deg, #b84dff 0%, #6c43ff 50%, #ff47d6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            animation: titleGradientShift 4s ease-in-out infinite;
+            background-size: 200% 200%;
+        }
+        
+        @keyframes titleGradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        .title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #b84dff, #6c43ff, #ff47d6, transparent);
+            border-radius: 2px;
+            animation: titleUnderline 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleUnderline {
+            0%, 100% {
+                transform: scaleX(0.8);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scaleX(1);
+                opacity: 1;
+            }
         }
         
         .subtitle {
@@ -109,12 +259,190 @@
             font-size: 1.3em;
             color: #a78bfa;
             opacity: 0.9;
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: subtitleSlideUp 0.8s ease 1.3s forwards;
+        }
+        
+        @keyframes subtitleSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* КРАСИВЫЙ АНИМИРОВАННЫЙ ПЕРЕКЛЮЧАТЕЛЬ */
+        .mode-switcher {
+            display: inline-flex;
+            background: rgba(23, 15, 51, 0.8);
+            border-radius: 50px;
+            padding: 8px;
+            border: 1px solid rgba(184, 77, 255, 0.3);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: switcherSlideUp 0.8s ease 1.5s forwards;
+        }
+        
+        @keyframes switcherSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .mode-switcher::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: calc(50% - 8px);
+            height: calc(100% - 16px);
+            background: linear-gradient(135deg, #b84dff 0%, #6c43ff 100%);
+            border-radius: 40px;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1;
+            box-shadow: 
+                0 4px 15px rgba(184, 77, 255, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+        
+        .mode-switcher.aphorisms-mode::before {
+            transform: translateX(100%);
+            background: linear-gradient(135deg, #ff47d6 0%, #b84dff 100%);
+        }
+        
+        .mode-btn {
+            padding: 12px 30px;
+            border: none;
+            background: transparent;
+            color: #a78bfa;
+            font-weight: 700;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-family: 'Rubik', sans-serif;
+            font-size: 1em;
+            position: relative;
+            z-index: 2;
+            min-width: 160px;
+            text-align: center;
+        }
+        
+        .mode-btn.active {
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mode-btn:not(.active):hover {
+            color: #e8e6f3;
+            transform: translateY(-2px);
+        }
+        
+        /* Анимация иконок для кнопок */
+        .mode-btn::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+            transition: all 0.4s ease;
+            filter: brightness(0.8);
+        }
+        
+        .mode-btn[data-mode="quotes"]::before {
+            background: linear-gradient(45deg, transparent 30%, currentColor 30%, currentColor 70%, transparent 70%),
+                        linear-gradient(-45deg, transparent 30%, currentColor 30%, currentColor 70%, transparent 70%);
+        }
+        
+        .mode-btn[data-mode="aphorisms"]::before {
+            background: 
+                radial-gradient(circle at center, currentColor 30%, transparent 30%),
+                radial-gradient(circle at center, currentColor 30%, transparent 30%),
+                radial-gradient(circle at center, currentColor 30%, transparent 30%);
+            background-size: 6px 6px;
+            background-position: 0% 50%, 50% 50%, 100% 50%;
+            background-repeat: no-repeat;
+        }
+        
+        .mode-btn.active::before {
+            filter: brightness(1.2);
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        /* Эффект блеска при переключении */
+        .mode-switcher::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50px;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255, 255, 255, 0.4) 50%, 
+                transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .mode-switcher.animating::after {
+            animation: switchShine 0.6s ease;
+        }
+        
+        @keyframes switchShine {
+            0% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+        
+        /* Пульсирующая анимация для активной кнопки */
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 4px 15px rgba(184, 77, 255, 0.4),
+                    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 6px 20px rgba(184, 77, 255, 0.6),
+                    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            }
+        }
+        
+        .mode-switcher::before {
+            animation: pulseGlow 3s ease-in-out infinite;
         }
         
         .table-container {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: contentSlideUp 0.8s ease 1.7s forwards;
+        }
+        
+        @keyframes contentSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .quote-table {
@@ -178,6 +506,7 @@
             color: #d8c7ff;
             cursor: pointer;
             text-align: center;
+            user-select: none;
         }
         
         .theme-cell:before {
@@ -205,6 +534,8 @@
             border: 1px solid transparent;
             height: 100%;
             cursor: pointer;
+            user-select: none;
+            overflow: hidden;
         }
         
         .quote-content:hover {
@@ -222,6 +553,7 @@
             align-items: center;
             gap: 12px;
             font-size: 1.1em;
+            user-select: none;
         }
         
         .character-name:before {
@@ -236,6 +568,7 @@
             color: #e2dcff;
             font-size: 1.05em;
             padding-right: 50px;
+            user-select: text;
         }
         
         .copy-btn {
@@ -253,6 +586,7 @@
             transition: all 0.3s ease;
             border: 1px solid rgba(184, 77, 255, 0.4);
             font-size: 1.3em;
+            user-select: none;
         }
         
         .copy-btn:hover {
@@ -518,45 +852,19 @@
                 padding: 25px;
                 width: 95%;
             }
-        }
-        
-        /* Декоративные элементы */
-        .floating-element {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: #b84dff;
-            border-radius: 50%;
-            opacity: 0.6;
-            z-index: -1;
-            animation: float 8s infinite linear;
-        }
-        
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(100vw, 100vh) rotate(360deg); }
-        }
-        
-        /* Создаем несколько плавающих элементов */
-        .floating-element:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation-duration: 25s;
-            background: #6c43ff;
-        }
-        
-        .floating-element:nth-child(2) {
-            top: 70%;
-            left: 80%;
-            animation-duration: 30s;
-            background: #ff47d6;
-        }
-        
-        .floating-element:nth-child(3) {
-            top: 40%;
-            left: 90%;
-            animation-duration: 20s;
-            background: #47d6ff;
+            
+            /* Адаптив для переключателя */
+            .mode-btn {
+                padding: 10px 20px;
+                min-width: 140px;
+                font-size: 0.9em;
+            }
+            
+            .mode-btn::before {
+                width: 16px;
+                height: 16px;
+                margin-right: 6px;
+            }
         }
         
         /* Индикатор прокрутки для мобильных */
@@ -587,19 +895,96 @@
                 display: block;
             }
         }
+        
+        /* Стиль для афоризмов */
+        .aphorisms-container {
+            display: none;
+            background: rgba(23, 15, 51, 0.7);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(184, 77, 255, 0.2);
+            animation: tableFloat 6s ease-in-out infinite;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: contentSlideUp 0.8s ease 1.7s forwards;
+        }
+        
+        .aphorism-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            overflow: hidden;
+        }
+        
+        .aphorism-item:hover {
+            background: rgba(184, 77, 255, 0.08);
+            border: 1px solid rgba(184, 77, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .aphorism-text {
+            font-weight: 500;
+            line-height: 1.7;
+            color: #e2dcff;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding-right: 50px;
+            user-select: text;
+        }
+        
+        .aphorism-source {
+            font-weight: 600;
+            color: #ff6bd6;
+            font-size: 0.95em;
+            opacity: 0.8;
+            user-select: none;
+        }
+        
+        .aphorism-copy {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(184, 77, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(184, 77, 255, 0.4);
+            user-select: none;
+        }
+        
+        .aphorism-copy:hover {
+            background: rgba(184, 77, 255, 0.4);
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
-    <!-- Прелоадер -->
-    <div class="preloader" id="preloader">
-        <div class="loader"></div>
-        <div class="loader-text">ЗАГРУЗКА...</div>
-    </div>
+    <!-- Канвас для частиц -->
+    <div id="particles-js"></div>
     
-    <!-- Декоративные элементы -->
-    <div class="floating-element"></div>
-    <div class="floating-element"></div>
-    <div class="floating-element"></div>
+    <!-- УЛУЧШЕННЫЙ ПРЕЛОАДЕР -->
+    <div class="preloader" id="preloader">
+        <div class="loader-wrapper">
+            <div class="loader-orbit"></div>
+            <div class="loader-orbit"></div>
+            <div class="loader-orbit"></div>
+            <div class="loader-orbit"></div>
+            <div class="loader-core"></div>
+        </div>
+        <div class="loader-text">ЗАГРУЗКА ЦИТАТ</div>
+    </div>
     
     <!-- Индикатор прокрутки для мобильных -->
     <div class="scroll-indicator">← Прокрутите в сторону →</div>
@@ -607,10 +992,21 @@
     <div class="container">
         <div class="header">
             <h1 class="title">Горе от ума</h1>
-            <div class="subtitle">Сравнительный анализ цитат Чацкого и Фамусовского общества</div>
+            <div class="subtitle">Сравнительный анализ цитат и знаменитые афоризмы</div>
+            
+            <!-- КРАСИВЫЙ АНИМИРОВАННЫЙ ПЕРЕКЛЮЧАТЕЛЬ -->
+            <div class="mode-switcher" id="modeSwitcher">
+                <button class="mode-btn active" data-mode="quotes">
+                    Сравнение цитат
+                </button>
+                <button class="mode-btn" data-mode="aphorisms">
+                    Известные афоризмы
+                </button>
+            </div>
         </div>
         
-        <div class="table-container">
+        <!-- Контейнер для сравнения цитат -->
+        <div class="table-container" id="quotesContainer">
             <table class="quote-table">
                 <thead>
                     <tr>
@@ -742,6 +1138,60 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Контейнер для афоризмов -->
+        <div class="aphorisms-container" id="aphorismsContainer">
+            <div class="aphorism-item" data-text="Счастливые часов не наблюдают." data-source="Акт 1, явл. 4">
+                <div class="aphorism-text">«Счастливые часов не наблюдают.»</div>
+                <div class="aphorism-source">Акт 1, явл. 4</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Служить бы рад, прислуживаться тошно." data-source="Акт 2, явл. 2">
+                <div class="aphorism-text">«Служить бы рад, прислуживаться тошно.»</div>
+                <div class="aphorism-source">Акт 2, явл. 2</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Чины людьми даются, а люди могут обмануться." data-source="Акт 3, явл. 21">
+                <div class="aphorism-text">«Чины людьми даются, а люди могут обмануться.»</div>
+                <div class="aphorism-source">Акт 3, явл. 21</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="А судьи кто?" data-source="Акт 2, явл. 5">
+                <div class="aphorism-text">«А судьи кто?»</div>
+                <div class="aphorism-source">Акт 2, явл. 5</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Что нового покажет мне Москва?" data-source="Акт 1, явл. 7">
+                <div class="aphorism-text">«Что нового покажет мне Москва?»</div>
+                <div class="aphorism-source">Акт 1, явл. 7</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Дома новы, но предрассудки стары." data-source="Акт 2, явл. 2">
+                <div class="aphorism-text">«Дома новы, но предрассудки стары.»</div>
+                <div class="aphorism-source">Акт 2, явл. 2</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Ум с сердцем не в ладу." data-source="Акт 3, явл. 1">
+                <div class="aphorism-text">«Ум с сердцем не в ладу.»</div>
+                <div class="aphorism-source">Акт 3, явл. 1</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="В деревню, к тетке, в глушь, в Саратов!" data-source="Акт 3, явл. 22">
+                <div class="aphorism-text">«В деревню, к тетке, в глушь, в Саратов!»</div>
+                <div class="aphorism-source">Акт 3, явл. 22</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Ах! злые языки страшнее пистолета." data-source="Акт 3, явл. 1">
+                <div class="aphorism-text">«Ах! злые языки страшнее пистолета.»</div>
+                <div class="aphorism-source">Акт 3, явл. 1</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+            <div class="aphorism-item" data-text="Минуй нас пуще всех печалей и барский гнев, и барская любовь." data-source="Акт 3, явл. 1">
+                <div class="aphorism-text">«Минуй нас пуще всех печалей и барский гнев, и барская любовь.»</div>
+                <div class="aphorism-source">Акт 3, явл. 1</div>
+                <div class="aphorism-copy">⎘</div>
+            </div>
+        </div>
     </div>
 
     <!-- Модальное окно -->
@@ -762,8 +1212,65 @@
         <span>Цитата скопирована в буфер!</span>
     </div>
 
+    <!-- Подключаем библиотеку частиц -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация частиц
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: ['#b84dff', '#6c43ff', '#ff47d6', '#47d6ff']
+                    },
+                    shape: {
+                        type: 'circle'
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true
+                    },
+                    size: {
+                        value: 3,
+                        random: true
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#b84dff',
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: true,
+                        out_mode: 'out'
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'repulse'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        }
+                    }
+                }
+            });
+
             // Скрываем прелоадер после загрузки страницы
             setTimeout(function() {
                 const preloader = document.getElementById('preloader');
@@ -771,8 +1278,8 @@
                 
                 setTimeout(function() {
                     preloader.style.display = 'none';
-                }, 500);
-            }, 1500);
+                }, 800);
+            }, 3000);
             
             const modal = document.getElementById('quoteModal');
             const closeModal = document.getElementById('closeModal');
@@ -780,7 +1287,52 @@
             const modalQuote = document.getElementById('modalQuote');
             const modalInfo = document.getElementById('modalInfo');
             
-            // Обработчики для кнопок копирования
+            // Переключение режимов с анимацией
+            const modeSwitcher = document.getElementById('modeSwitcher');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const quotesContainer = document.getElementById('quotesContainer');
+            const aphorismsContainer = document.getElementById('aphorismsContainer');
+            
+            modeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const mode = this.getAttribute('data-mode');
+                    
+                    // Если кнопка уже активна, ничего не делаем
+                    if (this.classList.contains('active')) return;
+                    
+                    // Анимация переключения
+                    modeSwitcher.classList.add('animating');
+                    
+                    // Обновляем активную кнопку
+                    modeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Обновляем класс контейнера для анимации фона
+                    if (mode === 'aphorisms') {
+                        modeSwitcher.classList.add('aphorisms-mode');
+                    } else {
+                        modeSwitcher.classList.remove('aphorisms-mode');
+                    }
+                    
+                    // Переключаем контейнеры с задержкой для синхронизации с анимацией
+                    setTimeout(() => {
+                        if (mode === 'quotes') {
+                            quotesContainer.style.display = 'block';
+                            aphorismsContainer.style.display = 'none';
+                        } else {
+                            quotesContainer.style.display = 'none';
+                            aphorismsContainer.style.display = 'block';
+                        }
+                    }, 200);
+                    
+                    // Убираем класс анимации после завершения
+                    setTimeout(() => {
+                        modeSwitcher.classList.remove('animating');
+                    }, 600);
+                });
+            });
+            
+            // Обработчики для кнопок копирования цитат
             const copyButtons = document.querySelectorAll('.copy-btn');
             
             copyButtons.forEach(button => {
@@ -791,6 +1343,21 @@
                 });
             });
             
+            // Обработчики для кнопок копирования афоризмов
+            const aphorismCopyButtons = document.querySelectorAll('.aphorism-copy');
+            
+            aphorismCopyButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const aphorismItem = this.closest('.aphorism-item');
+                    const text = aphorismItem.getAttribute('data-text');
+                    const source = aphorismItem.getAttribute('data-source');
+                    const fullText = `«${text}»\n${source}`;
+                    
+                    copyAphorism(fullText, aphorismItem);
+                });
+            });
+            
             // Обработчики для открытия модального окна
             const quoteContents = document.querySelectorAll('.quote-content');
             
@@ -798,6 +1365,19 @@
                 content.addEventListener('click', function(e) {
                     if (!e.target.classList.contains('copy-btn')) {
                         openModal(this);
+                    }
+                });
+            });
+            
+            // Обработчики для афоризмов
+            const aphorismItems = document.querySelectorAll('.aphorism-item');
+            
+            aphorismItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('aphorism-copy')) {
+                        const text = this.getAttribute('data-text');
+                        const source = this.getAttribute('data-source');
+                        openAphorismModal(text, source);
                     }
                 });
             });
@@ -832,6 +1412,18 @@
                 }, 10);
             }
             
+            function openAphorismModal(text, source) {
+                modalTitle.textContent = 'Знаменитый афоризм';
+                modalQuote.textContent = `«${text}»`;
+                modalInfo.textContent = `Этот афоризм из комедии А.С. Грибоедова "Горе от ума" (${source}) стал крылатым выражением в русском языке.`;
+                
+                modal.style.display = 'block';
+                
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+            }
+            
             function closeModalAnimation() {
                 modal.style.opacity = '0';
                 setTimeout(() => {
@@ -846,19 +1438,7 @@
                 
                 // Копирование в буфер обмена
                 navigator.clipboard.writeText(fullText).then(() => {
-                    // Показываем анимацию
-                    const quoteCell = element.closest('.quote-cell');
-                    quoteCell.classList.add('copied');
-                    setTimeout(() => {
-                        quoteCell.classList.remove('copied');
-                    }, 1000);
-                    
-                    // Показываем уведомление
-                    const notification = document.getElementById('copyNotification');
-                    notification.classList.add('show');
-                    setTimeout(() => {
-                        notification.classList.remove('show');
-                    }, 3000);
+                    showCopySuccess(element.closest('.quote-cell'));
                 }).catch(err => {
                     console.error('Ошибка копирования: ', err);
                     // Fallback для старых браузеров
@@ -869,21 +1449,41 @@
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
                     
-                    //Все равно показываем анимацию
-                    const quoteCell = element.closest('.quote-cell');
-                    quoteCell.classList.add('copied');
-                    setTimeout(() => {
-                        quoteCell.classList.remove('copied');
-                    }, 1000);
-                    
-                    const notification = document.getElementById('copyNotification');
-                    notification.classList.add('show');
-                    setTimeout(() => {
-                        notification.classList.remove('show');
-                    }, 3000);
+                    showCopySuccess(element.closest('.quote-cell'));
                 });
+            }
+            
+            function copyAphorism(text, element) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopySuccess(element);
+                }).catch(err => {
+                    console.error('Ошибка копирования: ', err);
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    showCopySuccess(element);
+                });
+            }
+            
+            function showCopySuccess(element) {
+                // Показываем анимацию
+                element.classList.add('copied');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 1000);
+                
+                // Показываем уведомление
+                const notification = document.getElementById('copyNotification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
             }
         });
     </script>
 </body>
-</html>
+    </html>
